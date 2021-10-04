@@ -1,0 +1,4 @@
+/var/lib/veil/output/compiled/go_revhttp_8080.exe
+https://zsecurity.org/byass-avs-by-source-code-editing/
+https://zsecurity.org/how-to-create-fully-undetectable-backdoors/
+https://zsecurity.org/vysecator-a-useful-tool-made-for-hackers-and-by-hackers/
