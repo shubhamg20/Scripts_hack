@@ -1,0 +1,7 @@
+#!/usr/lib/env python
+import netfilterqueue
+def packet_Sniff(packet):
+    print(packet)
+queue=netfilterqueue.NetfilterQueue
+queue.bind(0,packet_sniff)
+queue.run
